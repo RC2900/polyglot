@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Polyglot — 现代西班牙语</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=DM+Serif+Display&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --green:#1a9e6e;--green-l:#e6f7f1;--green-d:#0d6b4a;
+  --blue:#2563eb;--blue-l:#eff6ff;
+  --amber:#d97706;--amber-l:#fffbeb;
+  --red:#dc2626;--red-l:#fef2f2;
+  --text:#111;--text2:#555;--text3:#888;
+  --border:#e5e5e5;--bg:#fafaf8;--white:#fff;
+  --r:12px;--rs:8px;
+}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6}
+/* NAV */
+nav{padding:.875rem 2rem;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);background:var(--white);position:sticky;top:0;z-index:100}
+.logo{font-family:'DM Serif Display',serif;font-size:1.3rem;display:flex;align-items:center;gap:8px}
+.logo-dot{width:8px;height:8px;border-radius:50%;background:var(--green)}
+.nav-lang{font-size:.8rem;color:var(--text3)}
+/* SCREENS */
+.screen{display:none}.screen.active{display:block}
+/* CONTAINER */
+.wrap{max-width:720px;margin:0 auto;padding:0 1.5rem 4rem}
+/* SETUP */
+.hero{text-align:center;padding:3.5rem 1rem 2rem}
+.hero h1{font-family:'DM Serif Display',serif;font-size:clamp(1.8rem,4vw,2.6rem);line-height:1.2;margin-bottom:.75rem}
+.hero p{font-size:1rem;color:var(--text2);max-width:440px;margin:0 auto}
+.steps{display:flex;gap:6px;margin-bottom:1.5rem}
+.step-dot{height:3px;width:28px;border-radius:99px;background:var(--border);transition:background .2s}
+.step-dot.on{background:var(--green)}
+.card{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:1.5rem;margin-bottom:1rem}
+.card-title{font-size:.95rem;font-weight:600;margin-bottom:.2rem}
+.card-sub{font-size:.825rem;color:var(--text3);margin-bottom:1.1rem}
+.lang-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px;margin-bottom:1rem}
+.lb{background:var(--white);border:1px solid var(--border);border-radius:var(--rs);padding:9px 11px;cursor:pointer;display:flex;flex-direction:column;gap:3px;text-align:left;transition:border-color .15s}
+.lb:hover{border-color:#aaa}
+.lb.native{border:2px solid var(--blue);background:var(--blue-l)}
+.lb.known{border:2px solid var(--green);background:var(--green-l)}
+.lf{font-size:1.3rem}.ln{font-size:.78rem;font-weight:500}
+.ls{font-size:.68rem;padding:1px 6px;border-radius:99px;width:fit-content}
+.ls.native{background:#bfdbfe;color:#1e40af}.ls.known{background:#a7f3d0;color:#065f46}
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 18px;border-radius:var(--rs);font-size:.875rem;font-family:'DM Sans',sans-serif;font-weight:500;cursor:pointer;border:1px solid var(--border);background:var(--white);color:var(--text);transition:background .12s}
+.btn:hover{background:var(--bg)}
+.btn.primary{background:var(--green);color:#fff;border-color:var(--green)}
+.btn.primary:hover{background:var(--green-d)}
+.btn.ghost{border-color:transparent;background:transparent;color:var(--text2);padding-left:0}
+.btn-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:1rem}
+/* COURSE */
+.profile-bar{display:flex;align-items:center;gap:10px;padding:9px 13px;background:var(--white);border:1px solid var(--border);border-radius:var(--rs);margin-bottom:1.5rem;font-size:.83rem;color:var(--text2)}
+.pf{font-size:1rem}
+.pc{margin-left:auto;font-size:.78rem;color:var(--text3);cursor:pointer;background:none;border:none;font-family:'DM Sans',sans-serif}
+.pc:hover{color:var(--text)}
+.section-lbl{font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);margin-bottom:.75rem}
+.phase-block{margin-bottom:2rem}
+.phase-title{font-size:.85rem;font-weight:600;color:var(--text2);margin-bottom:.75rem;padding-bottom:.5rem;border-bottom:1px solid var(--border)}
+.lesson-row{display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--white);border:1px solid var(--border);border-radius:var(--rs);margin-bottom:6px;cursor:pointer;transition:border-color .15s,box-shadow .15s}
+.lesson-row:hover{border-color:var(--green);box-shadow:0 2px 10px rgba(26,158,110,.07)}
+.lesson-row.locked{opacity:.45;cursor:not-allowed}
+.lesson-row.done .lr-num{background:var(--green);color:#fff;border-color:var(--green)}
+.lr-num{width:28px;height:28px;border-radius:50%;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:600;color:var(--text3);flex-shrink:0}
+.lr-info{flex:1}
+.lr-title{font-size:.875rem;font-weight:500}
+.lr-sub{font-size:.775rem;color:var(--text3)}
+.lr-tag{font-size:.68rem;padding:2px 7px;border-radius:99px;font-weight:500;flex-shrink:0}
+.tg{background:#ede9fe;color:#5b21b6}
+.tv{background:var(--green-l);color:var(--green-d)}
+.tp{background:#fce7f3;color:#9d174d}
+/* LESSON */
+.back-btn{display:inline-flex;align-items:center;gap:4px;color:var(--text3);font-size:.83rem;cursor:pointer;background:none;border:none;font-family:'DM Sans',sans-serif;padding:0;margin-bottom:1.5rem}
+.back-btn:hover{color:var(--text)}
+.lesson-header{margin-bottom:1.5rem}
+.lesson-phase{font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);margin-bottom:.3rem}
+.lesson-title-big{font-size:1.4rem;font-weight:600;margin-bottom:.25rem}
+.lesson-goal{font-size:.875rem;color:var(--text2)}
+/* TABS */
+.tabs{display:flex;gap:3px;background:var(--bg);border-radius:var(--rs);padding:3px;margin-bottom:1.5rem;width:fit-content}
+.tab{padding:6px 16px;border-radius:calc(var(--rs) - 2px);font-size:.825rem;cursor:pointer;border:none;background:transparent;color:var(--text3);font-family:'DM Sans',sans-serif;transition:background .12s,color .12s}
+.tab.active{background:var(--white);color:var(--text);border:1px solid var(--border);font-weight:500}
+.tab-pane{display:none}.tab-pane.active{display:block}
+/* CONTENT AREA */
+.content-box{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:1.5rem;min-height:160px}
+.loading{display:flex;align-items:center;gap:10px;color:var(--text3);font-size:.875rem;padding:1.5rem 0}
+.spinner{width:16px;height:16px;border:2px solid var(--border);border-top-color:var(--green);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+/* AI CONTENT */
+.ai-c{font-size:.9rem;line-height:1.85;color:var(--text)}
+.ai-c h3{font-size:.95rem;font-weight:600;margin:1.2rem 0 .4rem;color:var(--text)}
+.ai-c h3:first-child{margin-top:0}
+.ai-c p{margin-bottom:.65rem}
+.ai-c table{width:100%;border-collapse:collapse;font-size:.83rem;margin:.75rem 0}
+.ai-c th{text-align:left;padding:6px 10px;background:var(--bg);border:1px solid var(--border);font-weight:600;color:var(--text2)}
+.ai-c td{padding:6px 10px;border:1px solid var(--border)}
+.ai-c tr:nth-child(even) td{background:var(--bg)}
+.ai-c .tip{background:var(--green-l);border-left:3px solid var(--green);border-radius:0 var(--rs) var(--rs) 0;padding:.65rem 1rem;margin:.75rem 0;font-size:.85rem;color:var(--green-d)}
+.ai-c strong{font-weight:600}
+/* EXAMPLES */
+.ex-list{display:flex;flex-direction:column;gap:10px}
+.ex-item{background:var(--white);border:1px solid var(--border);border-radius:var(--rs);padding:12px 14px;display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.ex-text{flex:1}
+.ex-es{font-size:.95rem;font-weight:500;color:var(--text);margin-bottom:2px}
+.ex-zh{font-size:.825rem;color:var(--text3)}
+.speak-btn{background:none;border:1px solid var(--border);border-radius:var(--rs);padding:5px 9px;cursor:pointer;font-size:.8rem;color:var(--text3);display:flex;align-items:center;gap:4px;white-space:nowrap;transition:border-color .12s,color .12s;flex-shrink:0}
+.speak-btn:hover{border-color:var(--green);color:var(--green)}
+.speak-btn.playing{border-color:var(--green);color:var(--green);background:var(--green-l)}
+/* QUIZ */
+.quiz-q{margin-bottom:1.5rem}
+.quiz-num{font-size:.72rem;color:var(--text3);margin-bottom:.3rem}
+.quiz-text{font-size:.95rem;font-weight:500;margin-bottom:.75rem}
+.quiz-opts{display:flex;flex-direction:column;gap:7px}
+.quiz-opt{background:var(--white);border:1px solid var(--border);border-radius:var(--rs);padding:10px 14px;cursor:pointer;font-size:.875rem;text-align:left;font-family:'DM Sans',sans-serif;transition:border-color .12s,background .12s;width:100%}
+.quiz-opt:hover:not(:disabled){border-color:var(--green);background:var(--green-l)}
+.quiz-opt.correct{border-color:var(--green)!important;background:var(--green-l)!important;color:var(--green-d)!important}
+.quiz-opt.wrong{border-color:var(--red)!important;background:var(--red-l)!important;color:var(--red)!important}
+.quiz-opt:disabled{cursor:default}
+.quiz-result{margin-top:1rem;padding:.75rem 1rem;border-radius:var(--rs);font-size:.875rem}
+.quiz-result.pass{background:var(--green-l);color:var(--green-d)}
+.quiz-result.fail{background:var(--amber-l);color:var(--amber)}
+/* NEXT BTN */
+.next-lesson{margin-top:1.5rem;padding-top:1rem;border-top:1px solid var(--border);display:flex;justify-content:flex-end}
+@media(max-width:480px){nav{padding:.875rem 1rem}.wrap{padding:0 1rem 3rem}}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo"><div class="logo-dot"></div> Polyglot</div>
+  <div class="nav-lang" id="nav-lang"></div>
+</nav>
+
+<!-- ══ SETUP ══ -->
+<div id="screen-setup" class="screen active">
+  <div class="hero">
+    <h1>用你已会的语言<br>学西班牙语</h1>
+    <p>按《现代西班牙语》教材体系，AI 根据你的语言背景量身讲解每一个知识点。</p>
+  </div>
+  <div class="wrap">
+    <div class="steps">
+      <div class="step-dot on" id="d1"></div>
+      <div class="step-dot" id="d2"></div>
+    </div>
+    <div id="s1">
+      <div class="card">
+        <div class="card-title">你已经掌握哪些语言？</div>
+        <div class="card-sub">点一次 = 母语（蓝），再点 = 已掌握（绿），再点 = 取消</div>
+        <div class="lang-grid" id="known-grid"></div>
+      </div>
+      <div class="btn-row"><button class="btn primary" onclick="toS2()">下一步 →</button></div>
+    </div>
+    <div id="s2" style="display:none">
+      <div class="card" style="background:var(--green-l);border-color:#a7f3d0">
+        <div class="card-title">🎯 你的目标语言</div>
+        <div style="display:flex;align-items:center;gap:12px;margin-top:.5rem">
+          <span style="font-size:2rem">🇪🇸</span>
+          <div>
+            <div style="font-size:1.1rem;font-weight:600">西班牙语</div>
+            <div style="font-size:.825rem;color:var(--text2)">基于《现代西班牙语》（董燕生·刘建）第一册</div>
+          </div>
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="btn ghost" onclick="toS1()">← 返回</button>
+        <button class="btn primary" onclick="startApp()">开始学习 →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ COURSE ══ -->
+<div id="screen-course" class="screen">
+  <div class="wrap" style="padding-top:1.5rem">
+    <div class="profile-bar">
+      <span class="pf" id="pf-flags"></span>
+      <span id="pf-text"></span>
+      <button class="pc" onclick="showScreen('screen-setup')">修改</button>
+    </div>
+    <div class="section-lbl">《现代西班牙语》第一册 · 24课</div>
+    <div id="course-list"></div>
+  </div>
+</div>
+
+<!-- ══ LESSON ══ -->
+<div id="screen-lesson" class="screen">
+  <div class="wrap" style="padding-top:1.5rem">
+    <button class="back-btn" onclick="showScreen('screen-course')">← 课程列表</button>
+    <div class="lesson-header">
+      <div class="lesson-phase" id="l-phase"></div>
+      <div class="lesson-title-big" id="l-title"></div>
+      <div class="lesson-goal" id="l-goal"></div>
+    </div>
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('explain',this)">讲解</button>
+      <button class="tab" onclick="switchTab('examples',this)">例句</button>
+      <button class="tab" onclick="switchTab('quiz',this)">测验</button>
+    </div>
+    <div id="tab-explain" class="tab-pane active">
+      <div class="content-box" id="explain-content"></div>
+    </div>
+    <div id="tab-examples" class="tab-pane">
+      <div class="ex-list" id="examples-list"></div>
+    </div>
+    <div id="tab-quiz" class="tab-pane">
+      <div id="quiz-content"></div>
+    </div>
+    <div class="next-lesson" id="next-area" style="display:none">
+      <button class="btn primary" onclick="goNextLesson()">下一课 →</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── DATA ────────────────────────────────────────────────────
+const LANGS=[
+  {code:'zh',flag:'🇨🇳',name:'中文'},{code:'en',flag:'🇬🇧',name:'英语'},
+  {code:'fr',flag:'🇫🇷',name:'法语'},{code:'it',flag:'🇮🇹',name:'意大利语'},
+  {code:'pt',flag:'🇧🇷',name:'葡萄牙语'},{code:'de',flag:'🇩🇪',name:'德语'},
+  {code:'ja',flag:'🇯🇵',name:'日语'},{code:'ko',flag:'🇰🇷',name:'韩语'},
+  {code:'ru',flag:'🇷🇺',name:'俄语'},{code:'ar',flag:'🇸🇦',name:'阿拉伯语'},
+];
+
+const CURRICULUM=[
+  {phase:'第一阶段·发音基础（第1–12课）',lessons:[
+    {id:1,title:'字母表与基本发音',tag:'发音',tagClass:'tp',goal:'认识西班牙语29个字母，掌握每个字母的读音',
+     examples:[
+       {es:'A, a — "a"',zh:'读如中文"啊"，嘴巴大开'},
+       {es:'E, e — "e"',zh:'读如中文"诶"，嘴角略展'},
+       {es:'I, i — "i"',zh:'读如中文"衣"，嘴角拉开'},
+       {es:'O, o — "o"',zh:'读如中文"哦"，嘴唇圆'},
+       {es:'U, u — "u"',zh:'读如中文"乌"，嘴唇突出'},
+     ],
+     quiz:[
+       {q:'西班牙语字母表共有多少个字母？',opts:['26个','28个','29个','30个'],ans:2},
+       {q:'西班牙语中哪个字母在英语里没有？',opts:['W','Ñ','K','X'],ans:1},
+       {q:'字母"H"在西班牙语中如何发音？',opts:['读/h/音','读/x/音','不发音','读/j/音'],ans:2},
+     ]},
+    {id:2,title:'元音与辅音：发音规则',tag:'发音',tagClass:'tp',goal:'掌握5个元音的准确发音，了解主要辅音规则',
+     examples:[
+       {es:'casa',zh:'[ˈkasa] 房子 — 每个元音都清晰发音'},
+       {es:'libro',zh:'[ˈliβɾo] 书 — b/v 在元音间发近似摩擦音'},
+       {es:'gato',zh:'[ˈɡato] 猫 — g 在 a/o/u 前发/g/'},
+       {es:'gente',zh:'[ˈxente] 人们 — g 在 e/i 前发/x/（类似中文"喝"）'},
+       {es:'ciudad',zh:'[θjuˈðað] 城市 — d 在词尾弱化'},
+     ],
+     quiz:[
+       {q:'"Gato"中字母G的发音是？',opts:['/x/ 如"喝"','/g/ 如"哥"','/h/ 如英语hot','/ɣ/ 摩擦音'],ans:1},
+       {q:'西班牙语元音有几个？',opts:['4个','5个','6个','7个'],ans:1},
+       {q:'"Jamón"（火腿）中J发什么音？',opts:['/dʒ/ 如英语jump','/j/ 如英语yes','/x/ 类似中文"喝"','/ʒ/ 如法语'],ans:2},
+     ]},
+    {id:3,title:'音节与重音规则',tag:'发音',tagClass:'tp',goal:'学会划分音节，掌握西班牙语重音规律',
+     examples:[
+       {es:'ca-sa',zh:'重音在倒数第二音节 → CA-sa'},
+       {es:'ha-blar',zh:'以辅音r结尾 → 重音在最后音节 ha-BLAR'},
+       {es:'á-rbol',zh:'有重音符号 → 按符号来 ÁR-bol（树）'},
+       {es:'ca-fé',zh:'有重音符号 → 最后音节 ca-FÉ（咖啡）'},
+       {es:'mú-si-ca',zh:'有重音符号 → 倒数第三音节 MÚ-si-ca（音乐）'},
+     ],
+     quiz:[
+       {q:'"Hablar"的重音在哪个音节？',opts:['HA-blar','ha-BLAR','两个一样重','没有重音'],ans:1},
+       {q:'有重音符号时，重音规则是？',opts:['忽略符号按规律','按符号位置','永远在最后','永远在第一'],ans:1},
+       {q:'"América"重音在哪？',opts:['A-mé-ri-ca第一','a-MÉ-ri-ca第二','a-mé-RI-ca第三','a-mé-ri-CA第四'],ans:0},
+     ]},
+    {id:4,title:'特殊字母：RR、LL、Ñ',tag:'发音',tagClass:'tp',goal:'掌握西班牙语特有字母的发音方法',
+     examples:[
+       {es:'perro',zh:'[ˈpeRo] 狗 — rr 是颤音，舌尖快速颤动'},
+       {es:'pero',zh:'[ˈpeɾo] 但是 — 单r 是弹音，只弹一次'},
+       {es:'llamo',zh:'[ˈʎamo] 我叫 — ll 发/y/音（拉美）'},
+       {es:'España',zh:'[esˈpaɲa] 西班牙 — ñ 发/ɲ/，类似"泥"的鼻音'},
+       {es:'mañana',zh:'[maˈɲana] 明天/早上 — ñ 的常见词'},
+     ],
+     quiz:[
+       {q:'"Perro"（狗）和"pero"（但是）的区别是？',opts:['意思相同','r和rr发音不同','拼写完全一样','重音不同'],ans:1},
+       {q:'"Ñ"的发音类似中文哪个音？',opts:['"呢"中的n','"妮"中的ni前鼻化音','"泥"的鼻化音ɲ','"恩"'],ans:2},
+       {q:'以下哪个词含有颤音rr？',opts:['pero','para','perro','primo'],ans:2},
+     ]},
+    {id:5,title:'连读与语调',tag:'发音',tagClass:'tp',goal:'了解西班牙语连读规则和基本语调模式',
+     examples:[
+       {es:'los amigos',zh:'连读：[lo sa ˈmiɣos] — 词尾辅音与下词首元音相连'},
+       {es:'¿Cómo estás?',zh:'[ˈkomo esˈtas] — 连读，语调先升后降'},
+       {es:'¡Hola!',zh:'感叹句：语调下降'},
+       {es:'¿Hablas español?',zh:'疑问句：语调上升'},
+       {es:'Habla bien.',zh:'陈述句：语调平稳后下降'},
+     ],
+     quiz:[
+       {q:'西班牙语疑问句末尾语调通常？',opts:['下降','上升','平稳','先升后降'],ans:1},
+       {q:'"los amigos"连读后听起来像？',opts:['lo sa-mi-gos','los a-mi-gos','lo-sa-mi-gos','los-a-mi-gos'],ans:0},
+       {q:'西班牙语标点符号的特点是？',opts:['和英语完全一样','句首加倒置标点','只在句末加标点','不用标点'],ans:1},
+     ]},
+    {id:6,title:'数字 0–30',tag:'词汇',tagClass:'tv',goal:'掌握0到30的数字说法，了解数字发音规律',
+     examples:[
+       {es:'cero, uno, dos, tres',zh:'0, 1, 2, 3'},
+       {es:'diez, once, doce, trece',zh:'10, 11, 12, 13 — 11-15不规则须记忆'},
+       {es:'veinte, veintiuno',zh:'20, 21 — veinti+ 组合'},
+       {es:'treinta y uno',zh:'31 — 30以上用 y（和）连接'},
+       {es:'Tengo veintidós años.',zh:'我22岁。— 年龄常用句'},
+     ],
+     quiz:[
+       {q:'"Quince"是数字几？',opts:['13','14','15','16'],ans:2},
+       {q:'21如何拼写？',opts:['veinte y uno','veintiuno','vientuno','veinte uno'],ans:1},
+       {q:'"Treinta"是？',opts:['13','23','30','33'],ans:2},
+     ]},
+    {id:7,title:'问候与自我介绍',tag:'词汇',tagClass:'tv',goal:'学会基本问候用语和自我介绍句型',
+     examples:[
+       {es:'¡Buenos días! / ¡Buenas tardes! / ¡Buenas noches!',zh:'早上好！/ 下午好！/ 晚上好！'},
+       {es:'¿Cómo te llamas? — Me llamo Ana.',zh:'你叫什么名字？— 我叫安娜。'},
+       {es:'¿De dónde eres? — Soy de China.',zh:'你从哪里来？— 我来自中国。'},
+       {es:'¿Cómo estás? — Estoy bien, gracias.',zh:'你好吗？— 我很好，谢谢。'},
+       {es:'Mucho gusto. — Igualmente.',zh:'很高兴认识你。— 我也是。'},
+     ],
+     quiz:[
+       {q:'下午见面该说？',opts:['Buenos días','Buenas tardes','Buenas noches','Hola noche'],ans:1},
+       {q:'"Me llamo"的意思是？',opts:['我来自…','我叫…','我是…','我有…'],ans:1},
+       {q:'"Mucho gusto"用于？',opts:['道别','感谢','初次见面','道歉'],ans:2},
+     ]},
+    {id:8,title:'人称代词',tag:'语法',tagClass:'tg',goal:'掌握西班牙语六个人称代词，理解与中文的对应关系',
+     examples:[
+       {es:'yo — tú — él/ella',zh:'我 — 你 — 他/她'},
+       {es:'nosotros — vosotros — ellos/ellas',zh:'我们 — 你们（西班牙）— 他们/她们'},
+       {es:'usted / ustedes',zh:'您/您们 — 正式场合用，相当于中文"您"'},
+       {es:'Yo soy estudiante.',zh:'我是学生。— 主语可省略'},
+       {es:'¿Tú hablas chino?',zh:'你说中文吗？— 口语中常省略tú'},
+     ],
+     quiz:[
+       {q:'"Vosotros"用于哪个地区？',opts:['拉丁美洲','西班牙本土','所有地区','正式场合'],ans:1},
+       {q:'西班牙语中人称代词通常可以？',opts:['不能省略','省略（动词词尾显示人称）','只在口语省略','只省略第一人称'],ans:1},
+       {q:'"Usted"是？',opts:['你的非正式说法','你的正式说法（您）','他的说法','我们的说法'],ans:1},
+     ]},
+    {id:9,title:'动词 ser 的现在时变位',tag:'语法',tagClass:'tg',goal:'掌握ser（是）的六个人称变位，用于描述本质属性',
+     examples:[
+       {es:'yo soy / tú eres / él es',zh:'我是 / 你是 / 他是'},
+       {es:'nosotros somos / vosotros sois / ellos son',zh:'我们是 / 你们是 / 他们是'},
+       {es:'Soy chino. / Eres estudiante.',zh:'我是中国人。/ 你是学生。'},
+       {es:'Ella es médica.',zh:'她是医生。— 职业用ser'},
+       {es:'Madrid es la capital de España.',zh:'马德里是西班牙首都。— 本质属性用ser'},
+     ],
+     quiz:[
+       {q:'"Nosotros _____ amigos." 填入正确变位：',opts:['sois','son','somos','eres'],ans:2},
+       {q:'Ser主要用于描述？',opts:['暂时状态','位置','本质属性','情绪'],ans:2},
+       {q:'"Tú _____ muy inteligente."',opts:['soy','eres','es','son'],ans:1},
+     ]},
+    {id:10,title:'动词 estar 的现在时变位',tag:'语法',tagClass:'tg',goal:'掌握estar（是/在）的变位，区分ser和estar的用法',
+     examples:[
+       {es:'yo estoy / tú estás / él está',zh:'我（在/是）/ 你（在/是）/ 他（在/是）'},
+       {es:'nosotros estamos / vosotros estáis / ellos están',zh:'我们 / 你们 / 他们'},
+       {es:'Estoy cansado.',zh:'我累了。— 暂时状态用estar'},
+       {es:'¿Dónde estás? — Estoy en casa.',zh:'你在哪？— 我在家。— 位置用estar'},
+       {es:'Él es alto. / Él está enfermo.',zh:'他个子高（本质）/ 他生病了（状态）'},
+     ],
+     quiz:[
+       {q:'"Estoy en Beijing." 中estar表示？',opts:['本质属性','暂时状态','位置','职业'],ans:2},
+       {q:'"Ella _____ contenta hoy."（她今天很开心）',opts:['es','soy','está','estás'],ans:2},
+       {q:'以下哪句用ser更合适？',opts:['Estoy en casa','Soy de México','Estoy cansado','Estoy aquí'],ans:1},
+     ]},
+    {id:11,title:'名词的性与数',tag:'语法',tagClass:'tg',goal:'理解西班牙语名词有阴阳性，掌握基本规律和复数变化',
+     examples:[
+       {es:'el libro / la mesa',zh:'书（阳）/ 桌子（阴）— 冠词区分性'},
+       {es:'el chico / la chica',zh:'男孩 / 女孩 — -o/-a 是常见规律'},
+       {es:'el estudiante / la estudiante',zh:'男学生 / 女学生 — 同形异性'},
+       {es:'libro → libros / mesa → mesas',zh:'辅音结尾加-s / 元音结尾加-s'},
+       {es:'ciudad → ciudades',zh:'以辅音结尾加-es — 城市→城市们'},
+     ],
+     quiz:[
+       {q:'以下哪个词通常是阴性？',opts:['libro（书）','chico（男孩）','casa（房子）','perro（狗）'],ans:2},
+       {q:'"El/la"的区别是？',opts:['没区别','el阳性，la阴性','el单数，la复数','随机使用'],ans:1},
+       {q:'"Ciudad"的复数是？',opts:['ciudads','ciudades','las ciudad','ciudad'],ans:1},
+     ]},
+    {id:12,title:'冠词：定冠词与不定冠词',tag:'语法',tagClass:'tg',goal:'掌握el/la/los/las和un/una的用法区别',
+     examples:[
+       {es:'el libro / los libros',zh:'那本书 / 那些书 — 定冠词（特指）'},
+       {es:'la casa / las casas',zh:'那所房子 / 那些房子'},
+       {es:'un libro / una casa',zh:'一本书 / 一所房子 — 不定冠词（泛指）'},
+       {es:'El libro es interesante.',zh:'这本书很有趣。— 特指已知事物'},
+       {es:'Quiero un café.',zh:'我想要一杯咖啡。— 泛指某一个'},
+     ],
+     quiz:[
+       {q:'定冠词用于？',opts:['第一次提到的事物','特指已知事物','所有名词','只用于阳性词'],ans:1},
+       {q:'"Una"用在什么名词前？',opts:['阳性单数','阴性单数','所有复数','阳性复数'],ans:1},
+       {q:'"___ estudiantes son inteligentes."（学生们很聪明）',opts:['Un','Una','Los','El'],ans:2},
+     ]},
+  ]},
+  {phase:'第二阶段·语法与词汇（第13–24课）',lessons:[
+    {id:13,title:'规则动词 -AR 变位',tag:'语法',tagClass:'tg',goal:'掌握-ar结尾动词的现在时变位规律，这是最大的动词类',
+     examples:[
+       {es:'hablar → hablo / hablas / habla',zh:'说话 → 我说/你说/他说'},
+       {es:'hablar → hablamos / habláis / hablan',zh:'我们说/你们说/他们说'},
+       {es:'trabajar — trabajo en una empresa.',zh:'工作 — 我在一家公司工作。'},
+       {es:'escuchar música / comprar comida',zh:'听音乐 / 买食物 — 常用-ar动词'},
+       {es:'¿Dónde trabajas? — Trabajo en Beijing.',zh:'你在哪工作？— 我在北京工作。'},
+     ],
+     quiz:[
+       {q:'"Tú _____ (hablar) español muy bien."',opts:['hablas','hablo','habla','hablan'],ans:0},
+       {q:'-ar动词的"nosotros"变位词尾是？',opts:['-amos','-áis','-an','-as'],ans:0},
+       {q:'以下哪个是-ar动词？',opts:['comer','vivir','hablar','ser'],ans:2},
+     ]},
+    {id:14,title:'规则动词 -ER / -IR 变位',tag:'语法',tagClass:'tg',goal:'掌握-er和-ir动词的现在时变位，与-ar动词对比记忆',
+     examples:[
+       {es:'comer → como / comes / come',zh:'吃 → 我吃/你吃/他吃'},
+       {es:'vivir → vivo / vives / vive',zh:'住/生活 → 我住/你住/他住'},
+       {es:'Comemos en casa.',zh:'我们在家吃饭。— -emos结尾'},
+       {es:'¿Dónde vives? — Vivo en Shanghái.',zh:'你住在哪？— 我住在上海。'},
+       {es:'Él lee libros todos los días.',zh:'他每天读书。— leer（读）是-er动词'},
+     ],
+     quiz:[
+       {q:'"Ellos _____ (comer) mucho."',opts:['comemos','coméis','comen','comes'],ans:2},
+       {q:'-er动词"yo"变位词尾是？',opts:['-o','-es','-e','-emos'],ans:0},
+       {q:'以下-ir动词中，哪个最常用？',opts:['hablar','comer','vivir','estar'],ans:2},
+     ]},
+    {id:15,title:'常用不规则动词：tener / ir',tag:'语法',tagClass:'tg',goal:'掌握tener（有）和ir（去）的变位，两个最常用的不规则动词',
+     examples:[
+       {es:'tener → tengo / tienes / tiene',zh:'有 → 我有/你有/他有'},
+       {es:'ir → voy / vas / va / vamos / vais / van',zh:'去 → 我去/你去/他去/我们去/你们去/他们去'},
+       {es:'Tengo dos hermanos.',zh:'我有两个兄弟。'},
+       {es:'¿Adónde vas? — Voy al mercado.',zh:'你去哪？— 我去市场。'},
+       {es:'Vamos a comer. (ir a + 动词原形)',zh:'我们去吃饭。— 表示将来的常用结构'},
+     ],
+     quiz:[
+       {q:'"Yo _____ hambre."（我饿了）',opts:['voy','tengo','estoy','soy'],ans:1},
+       {q:'"Ir a + 动词原形"表示？',opts:['过去时间','现在状态','将来计划','假设'],ans:2},
+       {q:'"Nosotros _____ al cine."（我们去电影院）',opts:['vamos','vais','van','imos'],ans:0},
+     ]},
+    {id:16,title:'形容词的变化与位置',tag:'语法',tagClass:'tg',goal:'理解形容词性数一致规则，掌握形容词在句中的位置',
+     examples:[
+       {es:'un libro interesante / una película interesante',zh:'一本有趣的书 / 一部有趣的电影 — 与名词性数一致'},
+       {es:'un chico alto / una chica alta',zh:'一个高男孩 / 一个高女孩 — -o/-a变化'},
+       {es:'libros interesantes / casas grandes',zh:'有趣的书们 / 大的房子们 — 复数加-s'},
+       {es:'Es una ciudad grande.',zh:'这是一座大城市。— 形容词通常在名词后'},
+       {es:'un buen amigo / una buena amiga',zh:'一个好朋友 — bueno在名词前缩写为buen'},
+     ],
+     quiz:[
+       {q:'"Las casas _____ (blanco)."应填？',opts:['blanco','blanca','blancos','blancas'],ans:3},
+       {q:'西班牙语形容词通常放在？',opts:['名词前','名词后','句首','句尾'],ans:1},
+       {q:'"Un libro _____ (bueno)"，名词前应用？',opts:['bueno','buena','buen','buenos'],ans:2},
+     ]},
+    {id:17,title:'数字 31–1000 与时间表达',tag:'词汇',tagClass:'tv',goal:'掌握大数字，学会询问和表达时间',
+     examples:[
+       {es:'treinta y uno, cuarenta, cincuenta',zh:'31, 40, 50'},
+       {es:'cien, doscientos, quinientos, mil',zh:'100, 200, 500, 1000'},
+       {es:'¿Qué hora es? — Son las tres.',zh:'几点了？— 3点了。'},
+       {es:'Es la una y media.',zh:'1点半。— 注意es la（单数）'},
+       {es:'Son las ocho menos cuarto.',zh:'7点45分（8点差一刻）'},
+     ],
+     quiz:[
+       {q:'500怎么说？',opts:['quinientos','cinco cientos','quinto','cincocientos'],ans:0},
+       {q:'"Son las dos."意思是？',opts:['2个','2点钟','2天','2岁'],ans:1},
+       {q:'"Es la una"中用"es"而非"son"是因为？',opts:['随机','una是单数','错误用法','习惯'],ans:1},
+     ]},
+    {id:18,title:'疑问词与基本问句',tag:'语法',tagClass:'tg',goal:'掌握七个核心疑问词，学会构建各类问句',
+     examples:[
+       {es:'¿Qué / Quién / Dónde / Cuándo',zh:'什么 / 谁 / 哪里 / 什么时候'},
+       {es:'¿Cómo / Cuánto / Por qué',zh:'怎么/如何 / 多少 / 为什么'},
+       {es:'¿Qué haces? — Estudio español.',zh:'你在做什么？— 我在学西班牙语。'},
+       {es:'¿Cuántos años tienes?',zh:'你几岁了？— cuántos因名词阳复数变化'},
+       {es:'¿Por qué estudias español?',zh:'你为什么学西班牙语？'},
+     ],
+     quiz:[
+       {q:'询问"哪里"用？',opts:['Qué','Cuándo','Dónde','Cómo'],ans:2},
+       {q:'"¿Cuántos libros tienes?" — cuántos变化因为？',opts:['随机','与libros（阳复）一致','动词要求','习惯'],ans:1},
+       {q:'"Por qué"的意思是？',opts:['哪里','什么时候','为什么','怎么'],ans:2},
+     ]},
+    {id:19,title:'现在进行时',tag:'语法',tagClass:'tg',goal:'用estar+现在分词表达正在进行的动作',
+     examples:[
+       {es:'estar + 现在分词(-ando/-iendo)',zh:'结构：estar变位 + 动词原形去尾+ando/iendo'},
+       {es:'hablar → hablando / comer → comiendo',zh:'说话中 / 吃饭中'},
+       {es:'Estoy estudiando ahora.',zh:'我现在正在学习。'},
+       {es:'¿Qué estás haciendo?',zh:'你在做什么？— hacer→haciendo'},
+       {es:'Ella está leyendo un libro.',zh:'她正在读一本书。— leer→leyendo（不规则）'},
+     ],
+     quiz:[
+       {q:'现在进行时的结构是？',opts:['ser+分词','estar+分词','haber+分词','tener+分词'],ans:1},
+       {q:'"vivir"的现在分词是？',opts:['vivando','viviendo','vivido','viviente'],ans:1},
+       {q:'"Estamos _____ (comer)."',opts:['comiendo','comando','comido','come'],ans:0},
+     ]},
+    {id:20,title:'直接宾语与宾语代词',tag:'语法',tagClass:'tg',goal:'理解直接宾语代词lo/la/los/las的用法和位置',
+     examples:[
+       {es:'lo / la / los / las',zh:'他/它（阳）/ 她/它（阴）/ 他们/它们（阳复）/ 她们/它们（阴复）'},
+       {es:'¿El libro? Lo tengo.',zh:'那本书？我有它。— lo代替阳性单数'},
+       {es:'¿La carta? La escribo.',zh:'那封信？我在写它。— la代替阴性单数'},
+       {es:'Quiero verlo. / Lo quiero ver.',zh:'我想看它。— 可在动词前或附在原形后'},
+       {es:'Los estudiantes — Los conozco.',zh:'那些学生 — 我认识他们。'},
+     ],
+     quiz:[
+       {q:'代替阴性复数名词用？',opts:['lo','la','los','las'],ans:3},
+       {q:'"¿El café? ___ quiero."',opts:['La','Lo','Los','Las'],ans:1},
+       {q:'宾语代词在句中的位置？',opts:['只能在动词前','只能在动词后','动词前或附在原形/分词后','随机'],ans:2},
+     ]},
+    {id:21,title:'简单过去时：规则动词',tag:'语法',tagClass:'tg',goal:'掌握简单过去时（indefinido）的规则变位，表达完成的过去动作',
+     examples:[
+       {es:'hablar → hablé / hablaste / habló',zh:'说话（过去）→ 我说了/你说了/他说了'},
+       {es:'comer → comí / comiste / comió',zh:'吃（过去）→ 我吃了/你吃了/他吃了'},
+       {es:'Ayer hablé con mi madre.',zh:'昨天我和妈妈通话了。— ayer（昨天）常触发过去时'},
+       {es:'¿Dónde comiste anoche?',zh:'你昨晚在哪吃的？— anoche（昨晚）'},
+       {es:'Estudié mucho el fin de semana.',zh:'我周末学习了很多。'},
+     ],
+     quiz:[
+       {q:'"Yo _____ (hablar) con él ayer."',opts:['hablo','hablé','habló','hablaba'],ans:1},
+       {q:'-ar动词简单过去时"él/ella"变位词尾？',opts:['-ó','-é','-aste','-aron'],ans:0},
+       {q:'以下哪个词暗示用简单过去时？',opts:['ahora（现在）','siempre（总是）','ayer（昨天）','mañana（明天）'],ans:2},
+     ]},
+    {id:22,title:'简单过去时：常用不规则动词',tag:'语法',tagClass:'tg',goal:'掌握ser/ir/tener/hacer等高频不规则动词的过去时变位',
+     examples:[
+       {es:'ser/ir → fui / fuiste / fue / fuimos / fuisteis / fueron',zh:'是/去（过去）→ ser和ir过去时相同！'},
+       {es:'tener → tuve / tuviste / tuvo',zh:'有（过去）'},
+       {es:'hacer → hice / hiciste / hizo',zh:'做（过去）— hizo注意拼写变化'},
+       {es:'Fui al supermercado.',zh:'我去了超市。— ir的过去时'},
+       {es:'¿Qué hiciste ayer?',zh:'你昨天做了什么？— hacer的过去时'},
+     ],
+     quiz:[
+       {q:'"Ser"和"ir"的简单过去时变位？',opts:['完全不同','部分相同','完全相同','只有yo形式相同'],ans:2},
+       {q:'"Yo ___ al banco ayer."（我昨天去了银行）',opts:['voy','fui','iba','fue'],ans:1},
+       {q:'"hacer"的"yo"过去时是？',opts:['hací','hacé','hice','hizo'],ans:2},
+     ]},
+    {id:23,title:'未来时：ir a + 原形 与简单将来时',tag:'语法',tagClass:'tg',goal:'学会两种表达将来的方式，了解其语气差别',
+     examples:[
+       {es:'ir a + 原形 = 计划好的将来',zh:'Voy a estudiar mañana. 我明天打算学习。'},
+       {es:'动词原形+词尾 = 简单将来时',zh:'Estudiaré mañana. 我明天会学习。（更正式）'},
+       {es:'hablar → hablaré / hablarás / hablará',zh:'将来时词尾加在原形后：-é/-ás/-á'},
+       {es:'¿Qué vas a hacer este finde?',zh:'你这个周末打算做什么？— ir a 更口语'},
+       {es:'El año que viene viviré en España.',zh:'明年我将住在西班牙。— 简单将来时'},
+     ],
+     quiz:[
+       {q:'"Voy a comer"属于哪种将来？',opts:['简单将来时','ir a+原形','过去将来时','条件式'],ans:1},
+       {q:'简单将来时词尾加在哪里？',opts:['动词词干上','动词原形上','过去分词上','现在分词上'],ans:1},
+       {q:'"Hablaremos"是？',opts:['我们说话（现在）','我们说话了（过去）','我们将说话（将来）','我们在说话（进行）'],ans:2},
+     ]},
+    {id:24,title:'综合复习：用西班牙语描述你的生活',tag:'词汇',tagClass:'tv',goal:'综合运用第一册所学，用西班牙语描述日常生活场景',
+     examples:[
+       {es:'Me llamo Li Ming. Soy chino y tengo 25 años.',zh:'我叫李明。我是中国人，25岁。'},
+       {es:'Estudio español porque quiero vivir en España.',zh:'我学西班牙语，因为我想住在西班牙。'},
+       {es:'Ayer fui al supermercado y compré muchas verduras.',zh:'昨天我去了超市，买了很多蔬菜。'},
+       {es:'Mañana voy a estudiar con mis amigos.',zh:'明天我打算和朋友一起学习。'},
+       {es:'¿Y tú? ¿Qué haces normalmente?',zh:'那你呢？你平时做什么？'},
+     ],
+     quiz:[
+       {q:'以下哪句描述过去的事？',opts:['Voy al cine mañana','Estoy estudiando','Fui al banco ayer','Tengo un perro'],ans:2},
+       {q:'"Quiero vivir en España."中quiero是？',opts:['过去时','将来时','现在时','命令式'],ans:2},
+       {q:'完成第一册后你的西语水平大约是？',opts:['A1入门','A2基础','B1中级','B2中高级'],ans:1},
+     ]},
+  ]}
+];
+
+// ─── STATE ──────────────────────────────────────────────
+let S={native:null,known:[],progress:{}};
+let curLesson=null, curLessonIdx=0, curPhaseIdx=0;
+let explainCache={};
+
+// ─── INIT ───────────────────────────────────────────────
+renderKnownGrid();
+
+function getLang(c){return LANGS.find(l=>l.code===c)}
+function allLessons(){return CURRICULUM.flatMap(p=>p.lessons)}
+
+// ─── SETUP ──────────────────────────────────────────────
+function renderKnownGrid(){
+  const g=document.getElementById('known-grid');g.innerHTML='';
+  LANGS.forEach(lang=>{
+    const isN=S.native===lang.code,isK=S.known.includes(lang.code);
+    const b=document.createElement('button');
+    b.className='lb'+(isN?' native':isK?' known':'');
+    b.innerHTML=`<span class="lf">${lang.flag}</span><span class="ln">${lang.name}</span>${isN?'<span class="ls native">母语</span>':isK?'<span class="ls known">已掌握</span>':''}`;
+    b.onclick=()=>toggleK(lang.code);g.appendChild(b);
+  });
+}
+function toggleK(c){
+  if(S.native===c){S.native=null;}
+  else if(S.known.includes(c)){S.known=S.known.filter(x=>x!==c);}
+  else if(!S.native){S.native=c;}
+  else if(!S.known.includes(c)){S.known.push(c);}
+  renderKnownGrid();
+}
+function toS2(){
+  if(!S.native){alert('请先选择你的母语');return;}
+  document.getElementById('s1').style.display='none';
+  document.getElementById('s2').style.display='block';
+  document.getElementById('d2').classList.add('on');
+}
+function toS1(){
+  document.getElementById('s2').style.display='none';
+  document.getElementById('s1').style.display='block';
+  document.getElementById('d2').classList.remove('on');
+}
+function startApp(){
+  renderCourse();showScreen('screen-course');
+}
+
+// ─── COURSE ─────────────────────────────────────────────
+function renderCourse(){
+  const n=getLang(S.native),kl=S.known.map(getLang);
+  document.getElementById('pf-flags').textContent=[n,...kl].map(l=>l.flag).join(' ');
+  document.getElementById('pf-text').textContent='正在学 🇪🇸 西班牙语';
+  document.getElementById('nav-lang').textContent=[n,...kl].map(l=>l.name).join('·')+' → 西班牙语';
+  const cl=document.getElementById('course-list');cl.innerHTML='';
+  CURRICULUM.forEach((phase,pi)=>{
+    const pb=document.createElement('div');pb.className='phase-block';
+    pb.innerHTML=`<div class="phase-title">${phase.phase}</div>`;
+    phase.lessons.forEach((lesson,li)=>{
+      const done=S.progress[lesson.id]==='done';
+      const row=document.createElement('div');
+      row.className='lesson-row'+(done?' done':'');
+      row.innerHTML=`
+        <div class="lr-num">${done?'✓':lesson.id}</div>
+        <div class="lr-info">
+          <div class="lr-title">${lesson.title}</div>
+          <div class="lr-sub">${lesson.goal}</div>
+        </div>
+        <span class="lr-tag ${lesson.tagClass}">${lesson.tag}</span>`;
+      row.onclick=()=>openLesson(lesson,pi,li);
+      pb.appendChild(row);
+    });
+    cl.appendChild(pb);
+  });
+}
+
+// ─── LESSON ─────────────────────────────────────────────
+function openLesson(lesson,pi,li){
+  curLesson=lesson;curPhaseIdx=pi;curLessonIdx=li;
+  document.getElementById('l-phase').textContent=CURRICULUM[pi].phase.split('·')[0];
+  document.getElementById('l-title').textContent=lesson.title;
+  document.getElementById('l-goal').textContent='本课目标：'+lesson.goal;
+  document.getElementById('next-area').style.display='none';
+  switchTab('explain',document.querySelector('.tab'));
+  showScreen('screen-lesson');
+  loadExplain(lesson);
+  renderExamples(lesson);
+  renderQuiz(lesson);
+}
+
+function switchTab(name,btn){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active'));
+  if(btn)btn.classList.add('active');
+  document.getElementById('tab-'+name).classList.add('active');
+  document.querySelectorAll('.tab')[['explain','examples','quiz'].indexOf(name)]?.classList.add('active');
+}
+
+// ─── EXPLAIN (AI) ────────────────────────────────────────
+async function loadExplain(lesson){
+  const box=document.getElementById('explain-content');
+  if(explainCache[lesson.id]){box.innerHTML=explainCache[lesson.id];return;}
+  box.innerHTML='<div class="loading"><div class="spinner"></div> AI 正在根据你的语言背景生成讲解…</div>';
+  const n=getLang(S.native),kl=S.known.map(getLang);
+  const system=`你是专业的西班牙语教师，擅长利用学习者已有的语言知识来讲解西班牙语。
+
+学习者背景：
+- 母语：${n.name}
+- 已掌握：${kl.length>0?kl.map(l=>l.name).join('、'):'无其他语言'}
+- 教材：《现代西班牙语》第一册（董燕生·刘建）
+- 当前课：第${lesson.id}课《${lesson.title}》
+- 本课目标：${lesson.goal}
+
+讲解要求：
+1. 用学习者母语（${n.name}）主讲
+2. 如果学习者掌握其他语言，在适当时候用那些语言举类比（例如：英语母语者可对比英语语法）
+3. 主动指出与学习者已知语言的相同点和不同点
+4. 对关键记忆点写"💡迁移提示："开头的提示
+5. 用Markdown格式：###标题，**加粗**关键词，Markdown表格
+6. 长度：400-600字，精炼不啰嗦，聚焦本课核心`;
+
+  const msg=`请讲解第${lesson.id}课《${lesson.title}》。充分利用我的语言背景帮助我理解这个知识点，特别注意指出与我已知语言的异同。`;
+  try{
+    const r=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-5',max_tokens:1200,system,messages:[{role:'user',content:msg}]})});
+    const d=await r.json();
+    if(d.error){box.innerHTML=`<p style="color:var(--red)">错误：${d.error.message}</p>`;return;}
+    const html=renderMD(d.content[0].text);
+    explainCache[lesson.id]=html;
+    box.innerHTML=html;
+  }catch(e){box.innerHTML='<p style="color:var(--red)">请求失败，请检查网络后重试。</p>';}
+}
+
+// ─── EXAMPLES ───────────────────────────────────────────
+function renderExamples(lesson){
+  const el=document.getElementById('examples-list');el.innerHTML='';
+  lesson.examples.forEach(ex=>{
+    const div=document.createElement('div');div.className='ex-item';
+    div.innerHTML=`<div class="ex-text"><div class="ex-es">${ex.es}</div><div class="ex-zh">${ex.zh}</div></div>
+      <button class="speak-btn" onclick="speak(this,'${ex.es.replace(/'/g,"\\'")}')">🔊 朗读</button>`;
+    el.appendChild(div);
+  });
+}
+
+function speak(btn,text){
+  if(!window.speechSynthesis){alert('你的浏览器不支持语音功能');return;}
+  window.speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(text);
+  u.lang='es-ES';u.rate=0.85;
+  document.querySelectorAll('.speak-btn').forEach(b=>b.classList.remove('playing'));
+  btn.classList.add('playing');
+  u.onend=()=>btn.classList.remove('playing');
+  window.speechSynthesis.speak(u);
+}
+
+// ─── QUIZ ────────────────────────────────────────────────
+function renderQuiz(lesson){
+  const qc=document.getElementById('quiz-content');qc.innerHTML='';
+  let answered=0;
+  lesson.quiz.forEach((q,qi)=>{
+    const div=document.createElement('div');div.className='quiz-q';
+    div.innerHTML=`<div class="quiz-num">第 ${qi+1} 题 / 共 ${lesson.quiz.length} 题</div>
+      <div class="quiz-text">${q.q}</div>
+      <div class="quiz-opts" id="opts-${qi}"></div>
+      <div class="quiz-result" id="res-${qi}" style="display:none"></div>`;
+    qc.appendChild(div);
+    const optsEl=div.querySelector(`#opts-${qi}`);
+    q.opts.forEach((opt,oi)=>{
+      const b=document.createElement('button');b.className='quiz-opt';b.textContent=opt;
+      b.onclick=()=>{
+        optsEl.querySelectorAll('.quiz-opt').forEach(x=>x.disabled=true);
+        const resEl=div.querySelector(`#res-${qi}`);
+        if(oi===q.ans){
+          b.classList.add('correct');
+          resEl.className='quiz-result pass';resEl.textContent='✓ 正确！';
+        }else{
+          b.classList.add('wrong');
+          optsEl.querySelectorAll('.quiz-opt')[q.ans].classList.add('correct');
+          resEl.className='quiz-result fail';resEl.textContent='✗ 错了，正确答案已标出。';
+        }
+        resEl.style.display='block';
+        answered++;
+        if(answered===lesson.quiz.length){
+          S.progress[lesson.id]='done';
+          document.getElementById('next-area').style.display='flex';
+        }
+      };
+      optsEl.appendChild(b);
+    });
+  });
+}
+
+function goNextLesson(){
+  const lessons=CURRICULUM[curPhaseIdx].lessons;
+  if(curLessonIdx+1<lessons.length){
+    openLesson(lessons[curLessonIdx+1],curPhaseIdx,curLessonIdx+1);
+  }else if(curPhaseIdx+1<CURRICULUM.length){
+    openLesson(CURRICULUM[curPhaseIdx+1].lessons[0],curPhaseIdx+1,0);
+  }else{
+    alert('🎉 恭喜！你完成了《现代西班牙语》第一册全部24课！');
+    showScreen('screen-course');renderCourse();
+  }
+}
+
+// ─── UTILS ──────────────────────────────────────────────
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+function renderMD(t){
+  let h=t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/\|(.+)\|\n\|[-| :]+\|\n((?:\|.+\|\n?)+)/g,(_,hd,rows)=>{
+      const ths=hd.split('|').filter(s=>s.trim()).map(s=>`<th>${s.trim()}</th>`).join('');
+      const trs=rows.trim().split('\n').map(r=>`<tr>${r.split('|').filter(s=>s.trim()).map(s=>`<td>${s.trim()}</td>`).join('')}</tr>`).join('');
+      return `<table><thead><tr>${ths}</tr></thead><tbody>${trs}</tbody></table>`;
+    })
+    .replace(/^###(.+)$/gm,'<h3>$1</h3>')
+    .replace(/^##(.+)$/gm,'<h3>$1</h3>')
+    .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
+    .replace(/(💡[^\n]+)/g,'<div class="tip">$1</div>')
+    .replace(/\n\n/g,'</p><p>').replace(/\n/g,'<br>');
+  return `<div class="ai-c"><p>${h}</p></div>`;
+}
+</script>
+</body>
+</html>
